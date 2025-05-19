@@ -46,7 +46,7 @@ jobs:
         name: ${{ matrix.platform.name }}-binaries
         path: install_output
     - name: Create pull request
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v7
       with:
         commit-message: Update ${{ matrix.platform.name }} SDL binaries
         title: Update ${{ matrix.platform.name }} SDL binaries
@@ -81,7 +81,7 @@ jobs:
         cp Xcode/SDL/Products/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/SDL2       SDL2-CS/native/ios/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/SDL2;
         cp Xcode/SDL/Products/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/Info.plist SDL2-CS/native/ios/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/Info.plist;
     - name: Create pull request
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v7
       with:
         commit-message: Update iOS SDL binaries
         title: Update iOS SDL binaries
