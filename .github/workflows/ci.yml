@@ -16,7 +16,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
-    - uses: nuget/setup-nuget@v1
+    - uses: nuget/setup-nuget@v2
       with:
         nuget-api-key: ${{ secrets.NUGET_API_KEY }}
         nuget-version: '6.x'
