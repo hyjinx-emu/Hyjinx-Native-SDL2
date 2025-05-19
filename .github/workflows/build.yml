@@ -41,7 +41,7 @@ jobs:
       run: SDL2-CS/ci/run.sh $PWD $PWD/SDL2-CS/native/${{ matrix.platform.name }} ${{ matrix.platform.arch }}
       shell: bash
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform.name }}-binaries
         path: install_output
