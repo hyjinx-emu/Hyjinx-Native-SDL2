@@ -3,6 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDL2-CS", ".\src\SDL2-CS\SDL2-CS.csproj", "{85480198-8711-4355-830E-72FD794AD3F6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{668181AB-1837-4012-A365-28E1495E9308}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README = README
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8163083B-F131-499A-A1C6-C1B0724AB00B}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{DF4C80BC-B1F6-4FD6-98B4-FEE1443307E3}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -28,5 +45,9 @@ Global
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SDL2-CS.csproj
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8163083B-F131-499A-A1C6-C1B0724AB00B} = {668181AB-1837-4012-A365-28E1495E9308}
+		{DF4C80BC-B1F6-4FD6-98B4-FEE1443307E3} = {8163083B-F131-499A-A1C6-C1B0724AB00B}
 	EndGlobalSection
 EndGlobal
