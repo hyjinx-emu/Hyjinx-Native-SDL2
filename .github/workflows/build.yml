@@ -11,7 +11,7 @@ permissions:
   checks: write
   
 jobs:
-  build:
+  build-dotnet:
     runs-on: ubuntu-latest
     
     steps:
