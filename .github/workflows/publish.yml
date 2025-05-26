@@ -39,7 +39,7 @@ jobs:
           global-json-file: global.json
 
       - name: Build
-        run: dotnet build -c Release -o "dist"
+        run: dotnet build ./src/SDL2-CS/SDL2-CS.proj -c Release -o "dist"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
