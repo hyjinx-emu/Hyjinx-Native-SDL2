@@ -12,8 +12,7 @@
     </PropertyGroup>
 <!--    <PropertyGroup Label="NuGet">-->
 <!--        <Title>SDL2#</Title>-->
-<!--        <PackageId>Hyjinx.SDL2-CS</PackageId>-->
-<!--        <PackageProjectUrl>https://github.com/hyjinx-emu/SDL2-CS</PackageProjectUrl>-->
+<!--        <PackageProjectUrl></PackageProjectUrl>-->
 <!--        <RepositoryUrl>https://github.com/hyjinx-emu/SDL2-CS</RepositoryUrl>-->
 <!--    </PropertyGroup>-->
 <!--    <ItemGroup>-->
