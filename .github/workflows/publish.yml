@@ -80,26 +80,26 @@ jobs:
           name: nupkg
           path: ./out/*.nupkg
     
-    publish:
-      runs-on: windows-latest
-      needs: package
+  publish:
+    runs-on: windows-latest
+    needs: package
 
-      steps:
-        - name: Set up NuGet
-          uses: nuget/setup-nuget@v2
-          with:
-            nuget-version: latest
+    steps:
+      - name: Set up NuGet
+        uses: nuget/setup-nuget@v2
+        with:
+          nuget-version: latest
 
-        - name: Download artifacts
-          uses: actions/download-artifact@v4
-          with:
-            name: nupkg
-            path: dist/
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: dist/
 
-        - name: Push package(s)
-          shell: powershell
-          run: |
-            Get-ChildItem -Path "dist" -Filter *.nupkg | ForEach-Object {
-              Write-Host "Pushing $($_.FullName)"
-              nuget push $_.FullName -Source https://api.nuget.org/v3/index.json -ApiKey "${{ secrets.NUGET_TOKEN }}"
-            }
+      - name: Push package(s)
+        shell: powershell
+        run: |
+          Get-ChildItem -Path "dist" -Filter *.nupkg | ForEach-Object {
+            Write-Host "Pushing $($_.FullName)"
+            nuget push $_.FullName -Source https://api.nuget.org/v3/index.json -ApiKey "${{ secrets.NUGET_TOKEN }}"
+          }
