@@ -1,18 +1,34 @@
 name: publish
 
 on:
-  pull_request:
-    types: [opened, reopened]
   push:
-
+  release:
+    types: [ published ]
+    
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
+  build-native:
+    name: build (${{ matrix.platform.name }})
+    runs-on: ${{ matrix.platform.os }}
+    
+    strategy:
+      matrix:
+        platform:
+          - { name: win-x64,     os: windows-latest,  arch: x64 }
+          - { name: linux-x64,   os: ubuntu-latest,   arch: amd64 }
+      fail-fast: false
+      
+    steps:
+      - name: Echo hello
+        shell: bash
+        run: echo "Hello World!"
+      
   build-dotnet:
     runs-on: ubuntu-latest
-    
+      
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,39 +39,67 @@ jobs:
           global-json-file: global.json
 
       - name: Build
-        run: dotnet build -c Release
+        run: dotnet build -c Release -o "dist"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet
+          path: "dist/"
+          
+  package:
+    runs-on: windows-latest
+    needs: [ build-native, build-dotnet ]
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+          
+      - name: Set up NuGet
+        uses: nuget/setup-nuget@v2
+        with:
+          nuget-api-key: ${{ secrets.NUGET_TOKEN }}
+          nuget-version: latest
+
+      - name: Package preview
+        if: github.event.action != 'published'
+        shell: powershell
+        run: nuget pack SDL2-CS.nuspec -OutputDirectory ./out -Suffix "preview.${{ github.run_number }}"
+
+      - name: Package release
+        if: github.event.action == 'published'
+        shell: powershell
+        run: nuget pack SDL2-CS.nuspec -OutputDirectory ./out
         
-# name: Build
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: ./out/*.nupkg
+    
+    publish:
+      runs-on: windows-latest
+      needs: package
 
-# on:
-#   workflow_dispatch:
-#     inputs: {}
-#   #push:
-#   #  branches: [ master ]
+      steps:
+        - name: Set up NuGet
+          uses: nuget/setup-nuget@v2
+          with:
+            nuget-version: latest
 
-# jobs:
-#   build:
-#     runs-on: windows-latest
+        - name: Download artifacts
+          uses: actions/download-artifact@v4
+          with:
+            name: nupkg
+            path: dist/
 
-#     steps:
-#     - uses: actions/checkout@v4
-#     - name: Setup .NET
-#       uses: actions/setup-dotnet@v3
-#       with:
-#         dotnet-version: 7.0.x
-#     - uses: nuget/setup-nuget@v1
-#       with:
-#         nuget-api-key: ${{ secrets.NUGET_API_KEY }}
-#         nuget-version: '6.x'
-#     - name: Restore dependencies
-#       run: dotnet restore
-#     - name: Build
-#       run: dotnet build --no-restore
-#     - name: Test
-#       run: dotnet test --no-build --verbosity normal
-#     - name: Pack & Publish
-#       run: |
-#         dotnet pack --version-suffix "build${{ github.run_number }}" -c Release .\SDL2-CS.csproj -o .
-#         $file_to_publish = Get-ChildItem -Path $dir -Filter *.nupkg | Select -First 1
-#         echo $file_to_publish
-#         nuget push $file_to_publish -Source https://api.nuget.org/v3/index.json
+        - name: Push package(s)
+          shell: powershell
+          run: |
+            Get-ChildItem -Path "dist" -Filter *.nupkg | ForEach-Object {
+              Write-Host "Pushing $($_.FullName)"
+              nuget push $_.FullName -Source https://api.nuget.org/v3/index.json -ApiKey "${{ secrets.NUGET_TOKEN }}"
+            }
