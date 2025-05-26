@@ -1,3 +1,30 @@
+name: build
+
+on:
+  pull_request:
+    types: [opened, reopened]
+  push:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  build-dotnet:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        run: dotnet build -c Release
+        
 # name: Build
 
 # on:
