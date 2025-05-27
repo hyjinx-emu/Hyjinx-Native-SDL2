@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{668181AB
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
 		SDL2-CS.nuspec = SDL2-CS.nuspec
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8163083B-F131-499A-A1C6-C1B0724AB00B}"
