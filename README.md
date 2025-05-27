@@ -1,19 +1,10 @@
-This is SDL2#, a C# wrapper for SDL2.
+# SDL2-CS
+This is SDL2#, a C# wrapper for SDL2 specifically used by the Hyjinx emulator.
 
-Project Website: https://github.com/flibitijibibo/SDL2-CS
-
-License
--------
-SDL2 and SDL2# are released under the zlib license. See LICENSE for details.
-
-About SDL2
-----------
 For more information about SDL2, visit the SDL wiki:
-
 http://wiki.libsdl.org/moin.fcg/FrontPage
 
-About the C# Wrapper
---------------------
+## About
 The C# wrapper was written to be used for FNA's platform support. However, this
 is written in a way that can be used for any general C# application.
 
@@ -34,10 +25,14 @@ be exactly as they are done in the C library, with little-to-no concern for
 names will indicate which library file the function/type/value exists in, and
 everything else will be as close to the C version as technically possible.
 
-About the Visual Studio Debugger
---------------------------------
+## How to Debug
 When running C# applications under the Visual Studio debugger, native code that
 names threads with the 0x406D1388 exception will silently exit. To prevent this
 exception from being thrown by SDL, add this line before your SDL_Init call:
 
+```csharp
 SDL.SDL_SetHint(SDL.SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, "1");
+```
+
+# Credits
+- This project was originally created by Ethan Lee, and can be found at: https://github.com/flibitijibibo/SDL2-CS
