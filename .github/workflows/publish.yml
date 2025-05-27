@@ -57,6 +57,7 @@ jobs:
       - name: Configure SDL2 (Windows)
         if: matrix.platform.name == 'win-x64'
         shell: bash
+        working-directory: build
         run: cmake .. \
           -DCMAKE_SYSTEM_NAME=Windows \
           -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
@@ -68,17 +69,18 @@ jobs:
       - name: Configure SDL2 (Linux)
         if: matrix.platform.name == 'linux-x64'
         shell: bash
+        working-directory: build
         run: cmake .. \
           -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
 
       - name: Build SDL2
-        working-directory: build
         shell: bash
+        working-directory: build
         run: make -j$(nproc)
 
       - name: Install SDL2
-        working-directory: build
         shell: bash
+        working-directory: build
         run: make install
 
       - name: Upload artifacts
