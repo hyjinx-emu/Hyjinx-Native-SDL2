@@ -22,9 +22,21 @@ jobs:
       fail-fast: false
       
     steps:
-      - name: Echo hello
+      - name: Create staging directory
         shell: bash
-        run: echo "Hello World!"
+        run: |
+          mkdir "dist"
+          mkdir "dist/runtimes"
+        
+      - name: Stage existing
+        shell: bash
+        run: cp "runtimes/${{ matrix.platform.name }}" "dist/runtimes"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "native-${{ matrix.platform.name }}"
+          path: "dist/"
       
   build-dotnet:
     runs-on: ubuntu-latest
