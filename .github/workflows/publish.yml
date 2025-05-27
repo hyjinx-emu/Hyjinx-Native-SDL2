@@ -117,6 +117,10 @@ jobs:
       - name: Build
         run: dotnet build ./src/SDL2-CS/SDL2-CS.csproj -c Release -o "dist/lib/net9.0"
 
+      - name: Cleanup outputs
+        run: |
+          rm dist/lib/net9.0/SDL2-CS.dll.config
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -126,7 +130,6 @@ jobs:
   package:
     runs-on: windows-latest
     needs: [ build-native, build-dotnet ]
-    if: true == false
 
     steps:
       - name: Checkout
@@ -163,6 +166,7 @@ jobs:
   publish:
     runs-on: windows-latest
     needs: package
+    if: true == false
 
     steps:
       - name: Set up NuGet
