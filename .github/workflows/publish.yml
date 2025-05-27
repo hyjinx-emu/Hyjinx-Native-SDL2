@@ -9,6 +9,9 @@ permissions:
   contents: read
   pull-requests: write
 
+env:
+  SDL_VERSION: 2.30.0
+
 jobs:
   build-native:
     name: build (${{ matrix.platform.name }})
@@ -17,23 +20,66 @@ jobs:
     strategy:
       matrix:
         platform:
-          - { name: win-x64,     os: windows-latest,  arch: x64 }
-          - { name: linux-x64,   os: ubuntu-latest,   arch: amd64 }
+          - { name: win-x64,     os: ubuntu-latest }
+          - { name: linux-x64,   os: ubuntu-latest }
       fail-fast: false
+
+    env:
+      PLATFORM_NAME: ${{ matrix.platform.name }}
       
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          repository: libsdl-org/SDL
+          ref: release-${{ env.SDL_VERSION }}
         
-      - name: Create staging directory
-        shell: bash
+      - name: Install dependencies (Linux)
+        if: matrix.platform.name == 'linux-x64'
         run: |
-          mkdir "dist"
-          mkdir "dist/runtimes"
-        
-      - name: Stage existing
+          sudo apt update
+          sudo apt install -y cmake build-essential \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev \
+            libxi-dev libgl1-mesa-dev libasound2-dev libpulse-dev \
+            libudev-dev libdbus-1-dev libwayland-dev libxkbcommon-dev \
+            wayland-protocols
+
+      - name: Install dependencies (Windows)
+        if: matrix.platform.name == 'win-x64'
+        run: |
+          sudo apt update
+          sudo apt install -y cmake mingw-w64 make
+
+      - name: Create build folder
         shell: bash
-        run: cp -r "runtimes/${{ matrix.platform.name }}" "dist/runtimes"
+        run: mkdir build
+
+      - name: Configure SDL2 (Windows)
+        if: matrix.platform.name == 'win-x64'
+        shell: bash
+        run: cmake .. \
+          -DCMAKE_SYSTEM_NAME=Windows \
+          -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
+          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+          -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
+          -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
+
+      - name: Configure SDL2 (Linux)
+        if: matrix.platform.name == 'linux-x64'
+        shell: bash
+        run: cmake .. \
+          -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
+
+      - name: Build SDL2
+        working-directory: build
+        shell: bash
+        run: make -j$(nproc)
+
+      - name: Install SDL2
+        working-directory: build
+        shell: bash
+        run: make install
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
