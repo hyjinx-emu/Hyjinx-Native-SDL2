@@ -33,7 +33,7 @@ jobs:
         
       - name: Stage existing
         shell: bash
-        run: cp "runtimes/${{ matrix.platform.name }}" "dist/runtimes"
+        run: cp -r "runtimes/${{ matrix.platform.name }}" "dist/runtimes"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
