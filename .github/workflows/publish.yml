@@ -170,7 +170,7 @@ jobs:
 
   package:
     runs-on: windows-latest
-    needs: [ build-native, build-dotnet ]
+    needs: [ build-native, build-dotnet, build-license ]
 
     steps:
       - name: Checkout
