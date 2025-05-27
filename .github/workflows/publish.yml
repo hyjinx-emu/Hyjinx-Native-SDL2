@@ -58,20 +58,22 @@ jobs:
         if: matrix.platform.name == 'win-x64'
         shell: bash
         working-directory: build
-        run: cmake .. \
-          -DCMAKE_SYSTEM_NAME=Windows \
-          -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
-          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
-          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
-          -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
-          -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
+        run: |
+          cmake .. \
+            -DCMAKE_SYSTEM_NAME=Windows \
+            -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
+            -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+            -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+            -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
 
       - name: Configure SDL2 (Linux)
         if: matrix.platform.name == 'linux-x64'
         shell: bash
         working-directory: build
-        run: cmake .. \
-          -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
+        run: |
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
 
       - name: Build SDL2
         shell: bash
