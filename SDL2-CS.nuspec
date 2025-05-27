@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Hyjinx.SDL2-CS</id>
-    <version>2.30.0</version>
+    <version>0.0.0</version>
     <title>SDL2#</title>
     <description>This package contains SDL2 bindings to be used by the Hyjinx emulator.</description>
     <authors>hyjinx-emu</authors>

@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 env:
-  SDL_VERSION: 2.30.0
+  SDL_VERSION: 2.30.0 # This needs to be updated to match the SDL version being compiled.
 
 jobs:
   build-native:
@@ -114,6 +114,12 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Update version
+        uses: vers-one/dotnet-project-version-updater@v1.7
+        with:
+          file: "src/SDL2-CS/SDL2-CS.csproj"
+          version: ${{ env.SDL_VERSION }}
+
       - name: Build
         run: dotnet build ./src/SDL2-CS/SDL2-CS.csproj -c Release -o "dist/lib/net9.0"
 
@@ -154,12 +160,12 @@ jobs:
       - name: Package preview
         if: github.event.action != 'published'
         shell: powershell
-        run: nuget pack SDL2-CS.nuspec -OutputDirectory ./out -Suffix "preview.${{ github.run_number }}"
+        run: nuget pack SDL2-CS.nuspec -OutputDirectory ./out -Suffix "preview.${{ github.run_number }}" -Version "${{ env.SDL_VERSION }}"
 
       - name: Package release
         if: github.event.action == 'published'
         shell: powershell
-        run: nuget pack SDL2-CS.nuspec -OutputDirectory ./out
+        run: nuget pack SDL2-CS.nuspec -OutputDirectory ./out -Version "${{ env.SDL_VERSION }}"
         
       - name: Upload package
         uses: actions/upload-artifact@v4
