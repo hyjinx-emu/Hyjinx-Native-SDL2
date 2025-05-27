@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AssemblyTitle>SDL2#</AssemblyTitle>
+        <AssemblyName>SDL2-CS</AssemblyName>
+        <Description>libSDL2 bindings for C#</Description>
+        <RootNamespace>SDL2</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    </PropertyGroup>
+</Project>

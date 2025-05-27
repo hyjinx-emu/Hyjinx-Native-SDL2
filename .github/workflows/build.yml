@@ -1,92 +1,27 @@
-name: build-native
+name: build
+
 on:
-  workflow_dispatch:
-    inputs:
-      rev:
-        description: 'Hyjinx/SDL commit to build (this has to be a full commit sha, otherwise it will not work)'
-        required: true
-#  schedule:
-#    - cron: '0 0 * * *'
-env:
-  BUILD_TYPE: Release
-
+  pull_request:
+    types: [opened, reopened]
+  push:
+    
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  
 jobs:
-  build:
-    name: ${{ matrix.platform.name }}
-    runs-on: ${{ matrix.platform.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-        - { name: win-x64,     os: windows-latest, arch: x64    }
-        # - { name: win-x86,     os: windows-latest, arch: Win32  }
-        - { name: win-arm64,   os: windows-latest, arch: ARM64  }
-        - { name: linux-x64,   os: ubuntu-20.04,   arch: amd64  }
-        # - { name: linux-x86,   os: ubuntu-20.04,   arch: i386   }
-        - { name: linux-arm64, os: ubuntu-20.04,   arch: arm64  }
-        - { name: osx-x64,     os: macos-latest,   arch: x86_64 }
-        - { name: osx-arm64,   os: macos-latest,   arch: arm64  }
+  build-dotnet:
+    runs-on: ubuntu-latest
+    
     steps:
-    - name: Setup qemu static
-      uses: docker/setup-qemu-action@v3
-      if: runner.os == 'Linux'
-    - uses: actions/checkout@v4
-      with:
-        repository: hyjinx-emu/SDL2-CS
-        ref: ${{ github.event.inputs.rev }}
-    - uses: actions/checkout@v4
-      with:
-        path: 'SDL2-CS'
-    - name: Build and prepare release
-      run: SDL2-CS/ci/run.sh $PWD $PWD/SDL2-CS/native/${{ matrix.platform.name }} ${{ matrix.platform.arch }}
-      shell: bash
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ matrix.platform.name }}-binaries
-        path: install_output
-    - name: Create pull request
-      uses: peter-evans/create-pull-request@v4
-      with:
-        commit-message: Update ${{ matrix.platform.name }} SDL binaries
-        title: Update ${{ matrix.platform.name }} SDL binaries
-        body: This PR has been auto-generated to update the ${{ matrix.platform.name }} SDL binaries.
-        branch: update-${{ matrix.platform.name }}-binaries
-        path: 'SDL2-CS'
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  build-ios:
-    name: ios
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        repository: hyjinx-emu/SDL2-CS
-        ref: ${{ github.event.inputs.rev }}
-    - uses: actions/checkout@v4
-      with:
-        path: 'SDL2-CS'
-    - name: Build (iOS)
-      run: xcodebuild -project Xcode/SDL/SDL.xcodeproj -scheme xcFramework-iOS -configuration Release
-    - name: Prepare release directory (iOS)
-      run: mkdir -p SDL2-CS/native/ios
-    - name: Prepare release (iOS)
-      run: |
-        mkdir -p SDL2-CS/native/ios/SDL2.xcframework/ios-arm64/SDL2.framework;
-        mkdir -p SDL2-CS/native/ios/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework;
-        cp Xcode/SDL/Products/SDL2.xcframework/Info.plist                                           SDL2-CS/native/ios/SDL2.xcframework/Info.plist;
-        cp Xcode/SDL/Products/SDL2.xcframework/ios-arm64/SDL2.framework/SDL2                        SDL2-CS/native/ios/SDL2.xcframework/ios-arm64/SDL2.framework/SDL2;
-        cp Xcode/SDL/Products/SDL2.xcframework/ios-arm64/SDL2.framework/Info.plist                  SDL2-CS/native/ios/SDL2.xcframework/ios-arm64/SDL2.framework/Info.plist;
-        cp Xcode/SDL/Products/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/SDL2       SDL2-CS/native/ios/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/SDL2;
-        cp Xcode/SDL/Products/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/Info.plist SDL2-CS/native/ios/SDL2.xcframework/ios-arm64_x86_64-simulator/SDL2.framework/Info.plist;
-    - name: Create pull request
-      uses: peter-evans/create-pull-request@v4
-      with:
-        commit-message: Update iOS SDL binaries
-        title: Update iOS SDL binaries
-        body: This PR has been auto-genereated to update the iOS SDL binaries
-        branch: update-ios-binaries
-        path: 'SDL2-CS'
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          
+      - name: Build
+        run: dotnet build -c Release
