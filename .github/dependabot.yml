@@ -3,7 +3,7 @@ updates:
   - directory: /
     package-ecosystem: github-actions
     reviewers:
-      - marysaka
-      - TSRBerry
+      - viper0179
+    
     schedule:
-      interval: daily
+      interval: monthly
