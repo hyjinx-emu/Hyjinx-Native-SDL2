@@ -23,9 +23,6 @@ jobs:
           - { name: win-x64,     os: ubuntu-latest }
           - { name: linux-x64,   os: ubuntu-latest }
       fail-fast: false
-
-    env:
-      PLATFORM_NAME: ${{ matrix.platform.name }}
       
     steps:
       - name: Checkout
@@ -58,6 +55,8 @@ jobs:
         if: matrix.platform.name == 'win-x64'
         shell: bash
         working-directory: build
+        env:
+          PLATFORM_NAME: ${{ matrix.platform.name }}
         run: |
           cmake .. \
             -DCMAKE_SYSTEM_NAME=Windows \
@@ -65,15 +64,17 @@ jobs:
             -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
             -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
             -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
-            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/out/$PLATFORM_NAME
 
       - name: Configure SDL2 (Linux)
         if: matrix.platform.name == 'linux-x64'
         shell: bash
         working-directory: build
+        env:
+          PLATFORM_NAME: ${{ matrix.platform.name }}
         run: |
           cmake .. \
-            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist/runtimes/$PLATFORM_NAME/native
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/out/$PLATFORM_NAME
 
       - name: Build SDL2
         shell: bash
@@ -84,6 +85,20 @@ jobs:
         shell: bash
         working-directory: build
         run: make install
+
+      - name: Prepare staging directory
+        shell: bash
+        run: mkdir -p dist/runtimes/${{ matrix.platform.name }}/native
+
+      - name: Transfer SDL2 outputs (Windows)
+        if: matrix.platform.name == 'linux-x64'
+        shell: bash
+        run: cp out/${{ matrix.platform.name }}/libSDL2.dll dist/runtimes/${{ matrix.platform.name }}/native/
+
+      - name: Transfer SDL2 outputs (Linux)
+        if: matrix.platform.name == 'linux-x64'
+        shell: bash
+        run: cp out/${{ matrix.platform.name }}/libSDL2.so dist/runtimes/${{ matrix.platform.name }}/native/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
