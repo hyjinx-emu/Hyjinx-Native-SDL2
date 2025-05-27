@@ -144,13 +144,9 @@ jobs:
         shell: bash
         run: mkdir dist
 
-      - name: Create third party folder
-        shell: bash
-        run: mkdir third_party
-
       - name: Download SDL2 license
         shell: bash
-        run: curl -o third_party/SDL2-LICENSE.txt "https://raw.githubusercontent.com/libsdl-org/SDL/release-${{ env.SDL_VERSION }}/LICENSE.txt"
+        run: curl -o SDL2-LICENSE.txt "https://raw.githubusercontent.com/libsdl-org/SDL/release-${{ env.SDL_VERSION }}/LICENSE.txt"
 
       - name: Combine licenses
         shell: bash
@@ -160,7 +156,7 @@ jobs:
             echo "SDL2 (Simple DirectMedia Layer)
             echo "https://github.com/libsdl-org/SDL/blob/release-$SDL_VERSION/LICENSE.txt"
             echo
-            cat third_party/SDL2-LICENSE.txt
+            cat SDL2-LICENSE.txt
             echo
             echo "=========================================="
             cat LICENSE.txt
