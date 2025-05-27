@@ -34,6 +34,7 @@ jobs:
   build-native:
     name: build (${{ matrix.platform.name }})
     runs-on: ${{ matrix.platform.os }}
+    needs: prepare
 
     strategy:
       matrix:
@@ -159,6 +160,7 @@ jobs:
   
   build-license:
     runs-on: ubuntu-latest
+    needs: prepare
 
     steps:
       - name: Checkout
@@ -194,7 +196,7 @@ jobs:
 
   package:
     runs-on: windows-latest
-    needs: [ prepare, build-native, build-dotnet, build-license ]
+    needs: [ build-native, build-dotnet, build-license ]
 
     steps:
       - name: Checkout
@@ -256,3 +258,11 @@ jobs:
             Write-Host "Pushing $($_.FullName)"
             nuget push $_.FullName -Source https://api.nuget.org/v3/index.json -ApiKey "${{ secrets.NUGET_TOKEN }}"
           }
+      
+      - name: Bump version
+        uses: ./.github/actions/bump-version
+        if: github.event.action == 'published'
+        with:
+          target_file: "src/SDL2-CS/SDL2-CS.csproj"
+          new_version: ${{ needs.prepare.outputs.version_number }}
+          token: ${{ github.token }}
