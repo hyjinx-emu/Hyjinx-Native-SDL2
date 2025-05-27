@@ -132,7 +132,45 @@ jobs:
         with:
           name: dotnet
           path: "dist/"
-          
+  
+  build-license:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create dist folder
+        shell: bash
+        run: mkdir dist
+
+      - name: Create third party folder
+        shell: bash
+        run: mkdir third_party
+
+      - name: Download SDL2 license
+        shell: bash
+        run: curl -o third_party/SDL2-LICENSE.txt "https://raw.githubusercontent.com/libsdl-org/SDL/release-${{ env.SDL_VERSION }}/LICENSE.txt"
+
+      - name: Combine licenses
+        shell: bash
+        run: |
+          (
+            echo "=========================================="
+            echo "SDL2 (Simple DirectMedia Layer) - zlib License"
+            echo "https://github.com/libsdl-org/SDL/blob/release-$SDL_VERSION/LICENSE.txt"
+            cat third_party/SDL2-LICENSE.txt
+            echo
+            echo "=========================================="
+            cat LICENSE.txt
+          ) > dist/LICENSE.txt
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: license
+          path: "dist/"
+
   package:
     runs-on: windows-latest
     needs: [ build-native, build-dotnet ]
@@ -176,6 +214,7 @@ jobs:
   publish:
     runs-on: windows-latest
     needs: package
+    if: true == false
 
     steps:
       - name: Set up NuGet
