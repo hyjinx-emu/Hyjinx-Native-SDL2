@@ -176,7 +176,6 @@ jobs:
   publish:
     runs-on: windows-latest
     needs: package
-    if: true == false
 
     steps:
       - name: Set up NuGet
