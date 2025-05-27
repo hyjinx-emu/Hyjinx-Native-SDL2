@@ -4,7 +4,7 @@
     <id>Hyjinx.SDL2-CS</id>
     <version>1.2.0</version>
     <title>SDL2#</title>
-    <description>This package contains MoltenVK dependency required by Hyjinx.Graphics.Vulkan project to be used by Hyjinx on macOS.</description>
+    <description>This package contains SDL2 bindings to be used by the Hyjinx emulator.</description>
     <authors>hyjinx-emu</authors>
     <license type="file">LICENSE.txt</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
