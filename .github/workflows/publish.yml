@@ -284,7 +284,7 @@ jobs:
           tag: ${{ needs.prepare.outputs.full_version }}
           artifacts: "dist/*.*"
           prerelease: ${{ needs.prepare.outputs.version_suffix != '' }}
-          generateReleaseNotes: true
+          generateReleaseNotes: ${{ needs.prepare.outputs.version_suffix != '' }}
           allowUpdates: true
           omitBodyDuringUpdate: true
 
