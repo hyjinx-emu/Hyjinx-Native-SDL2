@@ -5,7 +5,7 @@ on:
     branches:
       - main
   release:
-    types: [ published ]
+    types: [ created ]
     
 permissions:
   contents: write
@@ -283,14 +283,14 @@ jobs:
         with:
           tag: ${{ needs.prepare.outputs.full_version }}
           artifacts: "dist/*.*"
-          prerelease: ${{ github.event.action != 'published' }}
-          generateReleaseNotes: ${{ github.event.action != 'published' }}
+          prerelease: ${{ needs.prepare.outputs.version_suffix != '' }}
+          generateReleaseNotes: true
           allowUpdates: true
-          omitBodyDuringUpdate: true
+          updateOnlyUnreleased: true
 
       - name: Bump version
         uses: ./.github/actions/bump-version
-        if: github.event.action == 'published'
+        if: needs.prepare.outputs.version_suffix == ''
         with:
           target_file: "Directory.Build.props"
           new_version: ${{ needs.prepare.outputs.version_number }}
