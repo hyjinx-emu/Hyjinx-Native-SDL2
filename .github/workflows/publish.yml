@@ -3,6 +3,8 @@ name: publish
 on:
   push:
     branches-ignore: [ main ]
+    paths:
+      - '.github/workflows/publish.yml'
   release:
     types: [ published ]
     
