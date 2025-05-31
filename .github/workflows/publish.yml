@@ -2,8 +2,7 @@ name: publish
 
 on:
   push:
-    # branches:
-    #   - main
+    branches-ignore: [ main ]
   release:
     types: [ published ]
     
