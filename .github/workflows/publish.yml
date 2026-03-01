@@ -121,7 +121,7 @@ jobs:
         run: cp out/lib/libSDL2.so dist/runtimes/${{ matrix.platform.name }}/native/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "native-${{ matrix.platform.name }}"
           path: "dist/"  
@@ -157,7 +157,7 @@ jobs:
         run: nuget pack Hyjinx.SDL2.native.nuspec -OutputDirectory ./out -Version "${{ needs.prepare.outputs.version_number }}"
         
       - name: Upload package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nupkg
           path: ./out/*.nupkg
