@@ -39,6 +39,8 @@ jobs:
         platform:
           - { name: win-x64,     runner: ubuntu }
           - { name: linux-x64,   runner: ubuntu }
+          - { name: osx-x64,     runner: macos, architecture: x86_64 }
+          - { name: osx-arm64,   runner: macos, architecture: arm64 }
       fail-fast: false
       
     steps:
@@ -63,6 +65,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y cmake mingw-w64 make
+
+      - name: Install dependencies (macOS)
+        if: startsWith(matrix.platform.name, 'osx-')
+        run: |
+          brew install cmake
 
       - name: Create build folder
         shell: bash
@@ -89,10 +96,20 @@ jobs:
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/out
 
+      - name: Configure SDL2 (macOS)
+        if: startsWith(matrix.platform.name, 'osx-')
+        shell: bash
+        working-directory: build
+        run: |
+          cmake .. \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.platform.architecture }} \
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/out
+
       - name: Build SDL2
         shell: bash
         working-directory: build
-        run: make -j$(nproc)
+        run: |
+          cmake --build . --parallel
 
       - name: Install SDL2
         shell: bash
@@ -112,6 +129,11 @@ jobs:
         if: matrix.platform.name == 'linux-x64'
         shell: bash
         run: cp out/lib/libSDL2.so dist/runtimes/${{ matrix.platform.name }}/native/
+
+      - name: Transfer SDL2 outputs (macOS)
+        if: startsWith(matrix.platform.name, 'osx-')
+        shell: bash
+        run: cp out/lib/libSDL2.dylib dist/runtimes/${{ matrix.platform.name }}/native/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
