@@ -3,7 +3,6 @@ name: build
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-  push:
 
 env:
   SDL_VERSION: 2.30.2 # This needs to be updated to match the SDL2 version being compiled.
