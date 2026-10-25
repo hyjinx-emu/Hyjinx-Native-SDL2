@@ -105,7 +105,7 @@ jobs:
         run: |
           cmake --build . --parallel --config Release
 
-      - name: Build SDL2
+      - name: Build SDL2 (Linux / macOS)
         if: matrix.platform.name != 'win-x64'
         shell: bash
         working-directory: build
@@ -119,7 +119,7 @@ jobs:
         run: |
           cmake --install . --config Release
 
-      - name: Install SDL2
+      - name: Install SDL2 (Linux / macOS)
         if: matrix.platform.name != 'win-x64'
         shell: bash
         working-directory: build
