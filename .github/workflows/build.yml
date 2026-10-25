@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         platform:
-          - { name: win-x64,     runner: ubuntu }
+          - { name: win-x64,     runner: windows }
           - { name: linux-x64,   runner: ubuntu }
           - { name: osx-x64,     runner: macos, architecture: x86_64 }
           - { name: osx-arm64,   runner: macos, architecture: arm64 }
@@ -58,12 +58,6 @@ jobs:
             libxi-dev libgl1-mesa-dev libasound2-dev libpulse-dev \
             libudev-dev libdbus-1-dev libwayland-dev libxkbcommon-dev \
             wayland-protocols
-
-      - name: Install dependencies (Windows)
-        if: matrix.platform.name == 'win-x64'
-        run: |
-          sudo apt update
-          sudo apt install -y cmake mingw-w64 make
 
       - name: Install dependencies (macOS)
         if: startsWith(matrix.platform.name, 'osx-')
@@ -113,7 +107,8 @@ jobs:
       - name: Install SDL2
         shell: bash
         working-directory: build
-        run: make install
+        run: |
+          cmake --install .
 
       - name: Prepare staging directory
         shell: bash
