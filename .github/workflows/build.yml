@@ -102,7 +102,7 @@ jobs:
         shell: bash
         working-directory: build
         run: |
-          cmake --build . --parallel
+          cmake --build --config Release . --parallel
 
       - name: Install SDL2
         shell: bash
