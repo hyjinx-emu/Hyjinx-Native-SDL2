@@ -79,7 +79,7 @@ jobs:
             -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
             -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
             -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
-            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/out
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/out \
             -DCMAKE_BUILD_TYPE=Release
 
       - name: Configure SDL2 (Linux)
