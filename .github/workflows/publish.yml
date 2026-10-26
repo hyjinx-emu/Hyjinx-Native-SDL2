@@ -40,7 +40,7 @@ jobs:
     strategy:
       matrix:
         platform:
-          - { name: win-x64,     runner: ubuntu }
+          - { name: win-x64,     runner: windows }
           - { name: linux-x64,   runner: ubuntu }
           - { name: osx-x64,     runner: macos, architecture: x86_64 }
           - { name: osx-arm64,   runner: macos, architecture: arm64 }
