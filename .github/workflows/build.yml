@@ -2,11 +2,17 @@ name: build
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [ opened, reopened, synchronize ]
   push:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 env:
-  SDL_VERSION: 2.30.2 # This needs to be updated to match the SDL2 version being compiled.
+  SDL_VERSION: 2.30.3 # This needs to be updated to match the SDL2 version being compiled.
 
 jobs:
   prepare:
@@ -44,6 +50,9 @@ jobs:
       fail-fast: false
       
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -151,3 +160,89 @@ jobs:
         with:
           name: "native-${{ matrix.platform.name }}"
           path: "dist/"  
+  
+  package:
+    runs-on: windows-latest
+    needs: [ prepare, build ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dist/
+          merge-multiple: true
+
+      - name: Set up NuGet
+        uses: nuget/setup-nuget@v2
+        with:
+          nuget-api-key: ${{ secrets.NUGET_TOKEN }}
+          nuget-version: latest
+
+      - name: Package preview
+        if: github.event_name != 'release'
+        shell: pwsh
+        run: nuget pack Hyjinx.SDL2.native.nuspec -OutputDirectory ./out -Suffix "${{ needs.prepare.outputs.version_suffix }}" -Version "${{ needs.prepare.outputs.version_number }}"
+
+      - name: Package release
+        if: github.event_name == 'release'
+        shell: pwsh
+        run: nuget pack Hyjinx.SDL2.native.nuspec -OutputDirectory ./out -Version "${{ needs.prepare.outputs.version_number }}"
+        
+      - name: Upload package
+        uses: actions/upload-artifact@v7
+        with:
+          name: nupkg
+          path: ./out/*.nupkg
+    
+  publish:
+    if: github.event_name == 'release'
+    runs-on: windows-latest
+    needs: package
+    
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: nupkg
+          path: dist/
+
+      - name: Set up NuGet
+        uses: nuget/setup-nuget@v2
+        with:
+          nuget-api-key: ${{ secrets.NUGET_TOKEN }}
+          nuget-version: latest
+          
+      - name: Push package(s)
+        shell: powershell
+        run: |
+          Get-ChildItem -Path "dist" -Filter *.nupkg | ForEach-Object {
+            Write-Host "Pushing $($_.FullName)"
+            nuget push $_.FullName -Source https://api.nuget.org/v3/index.json
+          }
+
+  post-publish:
+    runs-on: ubuntu-latest
+    needs: [ prepare, publish ]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: nupkg
+          path: dist/
+          
+      - name: Publish
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.prepare.outputs.full_version }}
+          artifacts: "dist/*.*"
+          prerelease: ${{ github.event_name != 'release' }}
+          generateReleaseNotes: ${{ github.event_name != 'release' }}
+          allowUpdates: true
+          omitBodyDuringUpdate: true
