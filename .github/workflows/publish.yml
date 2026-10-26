@@ -1,6 +1,9 @@
 name: publish
 
 on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+  push:
   release:
     types: [ published ]
 
@@ -9,7 +12,7 @@ permissions:
   pull-requests: write
 
 env:
-  SDL_VERSION: 2.30.2 # This needs to be updated to match the SDL2 version being compiled.
+  SDL_VERSION: 2.30.3 # This needs to be updated to match the SDL2 version being compiled.
 
 jobs:
   prepare:
@@ -47,6 +50,9 @@ jobs:
       fail-fast: false
       
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -192,7 +198,7 @@ jobs:
           path: ./out/*.nupkg
     
   publish:
-    if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: github.event_name == 'release'
     runs-on: windows-latest
     needs: package
     
